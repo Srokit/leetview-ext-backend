@@ -3,6 +3,8 @@ import os
 
 import boto3
 
+HINTS_DELIMITER = "##"
+
 def handler(event, context):
     "Return AWS lambda response OKAY"
 
@@ -21,10 +23,13 @@ def handler(event, context):
     )
 
     # Get hint field from first item
-    hint = response['Item']['hint']
-    print("GOT HINT:\n" + hint)
+    hints_unjoined = response['Item']['hint']
+    hints = hints_unjoined.split(HINTS_DELIMITER)
 
-    body = {'hint': hint}
+    print("Sending back hints:")
+    print(hints)
+
+    body = {'hints': hints}
 
     return {
         'statusCode': 200,
