@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  leetview-backend
+Transform:
+- AWS::Serverless-2016-10-31
+
+Resources:
+  getHint:
+    Type: AWS::Serverless::Function
+    Properties:
+      # Permission
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName: !Ref HintTable
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref HintTable
+      Handler: src/handlers/gethint.handler
+      Runtime: python3.10
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A function to return a hint for the interviewee.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /hint
+            Method: GET
+
+
+Globals:
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,OPTIONS'"
+      AllowHeaders: "'content-type'"
+      AllowOrigin: "'*'"
+
+Parameters:
+  HintTable:
+    Type: String
+    Description: The name of the DynamoDB table to create for storing hints.
+    Default: lv-prob-to-hint-table-v1
+
