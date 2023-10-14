@@ -5,6 +5,18 @@ import boto3
 
 HINTS_DELIMITER = "##"
 
+def errResponse(mess):
+    "Return AWS lambda response ERROR"
+    print("ERROR: " + mess + "\n")
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+        },
+        'body': json.dumps({'success': False, 'message': mess}),
+    }
+
 def handler(event, context):
     "Return AWS lambda response OKAY"
 
@@ -21,6 +33,10 @@ def handler(event, context):
             'prob_id': problem_id,
         }
     )
+
+    # If can't get item
+    if 'Item' not in response:
+        return errResponse("Problem id '{}' not found".format(problem_id))
 
     # Get hint field from first item
     hints_unjoined = response['Item']['hint']
